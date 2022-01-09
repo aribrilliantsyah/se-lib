@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Member;
 use Illuminate\Http\Request;
@@ -98,6 +99,34 @@ class MemberController extends Controller
         //
         return view('auth.member.login');
     }
+
+    /**
+     * Login process for member.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function login_proccess(Request $request)
+    {
+        //
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ], [
+            'username.required' => 'Username Wajib Diisi',
+            'password.required' => 'Username Wajib Diisi'
+        ]);
+
+        $credential = $request->only('username','password');
+        
+        if(AuthCommon::check_credential($credential)){
+            return redirect('/member/dashboard');
+        }
+
+        return redirect('login')
+            ->withInput()
+            ->withErrors(['login_gagal' => 'Kredensial yang dimasukan tidak cocok dengan data kami.']);
+    }
+
     /**
      * Reguster as member.
      *

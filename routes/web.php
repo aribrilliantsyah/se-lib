@@ -35,19 +35,23 @@ Route::prefix('member')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::get('/register', [UserController::class, 'register'])->name('user.register');
     Route::get('/login', [UserController::class, 'login'])->name('user.login');
-    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard.admin');
-    Route::get('/borrow_log/report', [BorrowLogController::class, 'report'])->name('borrow_log.report');
+
+    Route::middleware(['ryuna_role:admin,operator'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard.admin');
+        Route::get('/borrow_log/report', [BorrowLogController::class, 'report'])->name('borrow_log.report');
+        Route::resources([
+            'member' => MemberController::class,
+            'author' => AuthorController::class,
+            'category' => CategoryController::class,
+            'book' => BookController::class,
+            'borrow_log' => BorrowLogController::class,
+        ]);
+    });
+
+    Route::middleware(['ryuna_role:admin'])->group(function () {
+        Route::resources([
+            'user' => UserController::class
+        ]);
+    });
     
-    Route::resources([
-        'member' => MemberController::class,
-        'author' => AuthorController::class,
-        'category' => CategoryController::class,
-        'book' => BookController::class,
-        'borrow_log' => BorrowLogController::class,
-        'role' => RoleController::class,
-        'user' => UserController::class
-    ]);
 });
-
-
-

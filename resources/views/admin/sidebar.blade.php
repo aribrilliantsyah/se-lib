@@ -44,7 +44,7 @@
             ->end_group()
             ->divinder('User Management')
             ->start_group()
-            ->item('Role', 'ni ni-settings-gear-65', 'admin/role', Request::is('admin/role'))
+            // ->item('Role', 'ni ni-settings-gear-65', 'admin/role', Request::is('admin/role'))
             ->item('User', 'ni ni-settings', 'admin/user', Request::is('admin/user'))
             ->end_group();
             
