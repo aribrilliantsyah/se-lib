@@ -5,7 +5,7 @@
         <img alt="Image placeholder" src="{{ asset('assets/img/theme/team-3.jpg') }}">
       </span>
       <div class="media-body ml-2 d-none d-lg-block">
-        <span class="mb-0 text-sm  font-weight-bold">Ari Ganteng</span>
+        <span class="mb-0 text-sm  font-weight-bold">{{ \App\Helpers\AuthCommon::user()->name }}</span>
       </div>
     </div>
   </a>
@@ -18,8 +18,8 @@
       <span>My profile</span>
     </a>
     <div class="dropdown-divider"></div>
-    <a href="#!" class="dropdown-item">
-      <i class="ni ni-user-run"></i>
+    <a href="{{ route('user.logout') }}" class="dropdown-item">
+      <i class="fas fa-sign-out-alt"></i>
       <span>Logout</span>
     </a>
   </div>

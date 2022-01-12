@@ -6,6 +6,7 @@ use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -97,6 +98,7 @@ class MemberController extends Controller
     public function login()
     {
         //
+        if(Auth::check()) return redirect('member/dashboard');
         return view('auth.member.login');
     }
 
@@ -105,26 +107,26 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function login_proccess(Request $request)
+    public function login_process(Request $request)
     {
         //
         $request->validate([
             'username' => 'required',
             'password' => 'required',
-        ], [
-            'username.required' => 'Username Wajib Diisi',
-            'password.required' => 'Username Wajib Diisi'
         ]);
 
         $credential = $request->only('username','password');
         
         if(AuthCommon::check_credential($credential)){
-            return redirect('/member/dashboard');
-        }
+            $user = AuthCommon::user();
+            if($user->role_id == '1') return redirect('/member/dashboard');
 
-        return redirect('login')
+            AuthCommon::logout();
+        }
+        
+        return redirect('/member/login')
             ->withInput()
-            ->withErrors(['login_gagal' => 'Kredensial yang dimasukan tidak cocok dengan data kami.']);
+            ->withErrors(['login_failed' => 'These credentials do not match our records.']);
     }
 
     /**

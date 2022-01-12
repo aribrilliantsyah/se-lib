@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\AuthCommon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,17 +18,21 @@ class RyunaRole
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-
         if (!Auth::check()) {
-            return redirect('/admin/login');
+            if(in_array('member', $roles)){
+                return redirect('/member/login');
+            }else{
+                return redirect('/admin/login');
+            }
         }
 
-        $user = Auth::user();
+        $user = AuthCommon::user();
 
-        if(in_array($user->role, $roles)){        
+        if(in_array($user->role->role, $roles)){        
             return $next($request);
         }
+        return $next($request);
         
-        abort(403);
+        // abort(403);
     }
 }
