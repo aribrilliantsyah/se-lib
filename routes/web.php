@@ -61,3 +61,7 @@ Route::prefix('admin')->group(function () {
     });
     
 });
+
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['ryuna_role:admin,operator,member']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+});

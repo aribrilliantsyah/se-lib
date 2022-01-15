@@ -7,6 +7,8 @@ use App\Helpers\Dummy;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\DataTables\UsersDataTable;
+use App\Models\Role;
 
 class UserController extends Controller
 {
@@ -15,13 +17,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(UsersDatatable $dataTable)
     {
-        //
-        $data = [
-            'collection' => Dummy::users()
-        ];
-        return view('pages.user.list', $data);
+        return $dataTable->render('pages.user.list');
     }
 
     /**
@@ -32,6 +30,8 @@ class UserController extends Controller
     public function create()
     {
         //
+        $roles = Role::all();
+        return view('pages.user.create', compact('roles'));
     }
 
     /**
@@ -43,6 +43,29 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'name' => 'required|max:255',
+            'username' => 'required|alpha_dash|unique:users,username|max:100',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|alpha_dash',
+            'role_id' => 'required',
+            'avatar' => '',
+        ]);
+
+        $trx = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role_id' => $request->role_id,
+            'avatar' => $request->avatar,
+        ]);
+
+        if($trx){
+            return redirect()->route('user.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('user.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -54,6 +77,10 @@ class UserController extends Controller
     public function show(User $user)
     {
         //
+        $data = $user;
+        $id = $data->id;
+        $roles = Role::all();
+        return view('pages.user.show', compact('roles', 'data'));
     }
 
     /**
@@ -65,6 +92,10 @@ class UserController extends Controller
     public function edit(User $user)
     {
         //
+        $data = $user;
+        $id = $data->id;
+        $roles = Role::all();
+        return view('pages.user.edit', compact('roles', 'data', 'id'));
     }
 
     /**
@@ -77,6 +108,27 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         //
+        $rules = [
+            'name' => 'required|max:255',
+            'username' => 'required|alpha_dash|unique:users,username,'.$user->id.'|max:100',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'password' => 'alpha_dash',
+            'role_id' => 'required',
+            'avatar' => '',
+        ];
+
+        if(!$request->password) unset($rules['password']);
+        
+        $request->validate($rules);
+
+        if(!$request->password) $request = $request->except(['password']);
+        $trx = $user->update($request);
+
+        if($trx){
+            return redirect()->route('user.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('user.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -88,6 +140,15 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+        $delete = $user->delete();
+        if($delete){
+            return response()->json([
+                'message' => 'Data Deleted Successfully!'
+            ]);
+        }
+        return response()->json([
+            'message' => 'Data Failed Successfully!'
+        ]);
     }
 
     /**
