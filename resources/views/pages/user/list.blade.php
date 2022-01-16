@@ -28,14 +28,16 @@
     <div class="card">
       <div class="card-header">
         <div class="row align-items-center">
-          <div class="col-12">
+          <div class="col-8">
             <h3 class="mb-0">List User </h3>
+          </div>
+          <div class="col-4 text-right">
+            <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary btn-fab btn-icon btn-round"><i class="fas fa-plus-square"></i> Create New Data</a>
           </div>
         </div>
       </div>
       <div class="card-body">
         @include('admin.alert')
-        <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary btn-fab btn-icon btn-round"><i class="fas fa-plus-square"></i> Create New Data</a>
         <div class="table-responsive py-4">
           {!! $dataTable->table(['class' => 'table dt_table table-flush table-vertical-align']) !!}
         </div>

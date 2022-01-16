@@ -17,7 +17,7 @@
     <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
       <li class="breadcrumb-item"><a href="#"><i class="ni ni-settings"></i></a></li>
       <li class="breadcrumb-item"><a href="{{ route('user.index') }}">User</a></li>
-      <li class="breadcrumb-item activer" aria-current="page">Update</li>
+      <li class="breadcrumb-item activer" aria-current="page">Detail</li>
     </ol>
   </nav>
 </div>
@@ -30,7 +30,7 @@
       <div class="card-header">
         <div class="row align-items-center">
           <div class="col-12">
-            <h3 class="mb-0">Update User </h3>
+            <h3 class="mb-0">Detail User </h3>
           </div>
         </div>
       </div>
@@ -47,7 +47,11 @@
 <script src="{{ asset('/vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 <script>
   $('input').attr('readonly', true)
-  $('#btn-save').remove();
-  $('#btn-reset').remove();
+  $('.btn.btn-outline-default').attr('disabled', true)
+  $('#group_pw').remove()
+  $('#group_pp').remove()
+  $('#btn-save').remove()
+  $('#btn-reset').remove()
+  $('[name="role_id"]').prop("disabled", true);
 </script>
 @endsection

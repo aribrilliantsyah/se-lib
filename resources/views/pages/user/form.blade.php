@@ -20,7 +20,7 @@
     <span class="text-danger text-sm">{{ $errors->first('email') }}</span>
   @endif
 </div>
-<div class="form-group">
+<div class="form-group" id="group_pw">
   <label>Password</label>
   <div class="input-group">
     <input type="password" name="password" class="form-control" placeholder="Password" id="password">
@@ -56,7 +56,7 @@
 </div>
 <div class="form-group">
   <label>Profile Picture</label>
-  <div class="input-group">
+  <div class="input-group" id="group_pp">
     <input id="thumbnail" class="form-control" type="text" name="avatar" value="{{ old('avatar', @$data->avatar) }}" readonly>
     <span class="input-group-append">
       <button id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-outline-default">
