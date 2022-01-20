@@ -15,5 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         (new RoleSeeder())->run();
         (new UserSeeder())->run();
+        (new AuthorSeeder())->run();
+        (new CategorySeeder())->run();
+        (new BookSeeder())->run();
+        (new BookCategorySeeder())->run();
+        (new MemberSeeder())->run();
     }
 }
