@@ -23,13 +23,14 @@ class MemberSeeder extends Seeder
                 'email'=>'neni@selib.com',
                 'role_id'=> 1,
                 'password'=> bcrypt('rahasia'),
+                'avatar' => url('storage/images/1/profile2.jpeg'),
                 'member' => [
                     'id' => 1,
                     'code' => 'MB-001',
                     'full_name' => 'Neni',
                     'address' => 'Bojong Kukun',
                     'gender' => 'female',
-                    'photo' => '',
+                    'photo' => url('storage/images/1/profile2.jpeg'),
                     'profession' => 'student',
                     'user_id' => ''
                 ]
@@ -40,13 +41,14 @@ class MemberSeeder extends Seeder
                 'email'=>'euis@selib.com',
                 'role_id'=> 1,
                 'password'=> bcrypt('rahasia'),
+                'avatar' => url('storage/images/1/profile6.jpg'),
                 'member' => [
                     'id' => 2,
                     'code' => 'MB-002',
                     'full_name' => 'Euis',
                     'address' => 'Antapani',
                     'gender' => 'female',
-                    'photo' => '',
+                    'photo' => url('storage/images/1/profile6.jpg'),
                     'profession' => 'student',
                     'user_id' => ''
                 ]

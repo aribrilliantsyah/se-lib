@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'username' => 'admin',
+                'avatar' => url('storage/images/1/profile1.jfif'),
                 'name'=>'Admin Tamvan',
                 'email'=>'admin@selib.com',
                 'role_id'=> 3,
@@ -25,6 +26,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'username' => 'operator1',
+                'avatar' => url('storage/images/1/profile4.jpg'),
                 'name'=>'Operator 1',
                 'email'=>'operator1@selib.com',
                 'role_id'=> 2,
