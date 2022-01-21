@@ -17858,6 +17858,8 @@ a.text-darker:focus
 
     align-items: center;
     justify-content: center;
+
+    object-fit: cover;
 }
 .avatar img
 {
@@ -29634,4 +29636,9 @@ html:not([dir='rtl']) .noUi-horizontal .noUi-handle
 .swal2-popup .swal2-image
 {
     max-width: 200px;
+}
+
+.book-cover{
+    width: 100px;
+    border-radius: 8px;
 }

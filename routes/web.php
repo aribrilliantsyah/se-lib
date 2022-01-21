@@ -45,6 +45,12 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['ryuna_role:admin,operator'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard.admin');
         Route::get('/borrow_log/report', [BorrowLogController::class, 'report'])->name('borrow_log.report');
+        Route::get('/borrow_log/member_list', [BorrowLogController::class, 'member_list'])->name('borrow_log.member_list');
+        Route::get('/borrow_log/member_detail/{member_id}', [BorrowLogController::class, 'member_detail'])->name('borrow_log.member_detail');
+        Route::get('/borrow_log/borrowed_books/{member_id}', [BorrowLogController::class, 'borrowed_books'])->name('borrow_log.borrowed_books');
+        Route::get('/borrow_log/borrow/{member_id}', [BorrowLogController::class, 'borrow'])->name('borrow_log.borrow');
+        Route::get('/borrow_log/on_borrow/{member_id}/{book_id}', [BorrowLogController::class, 'on_borrow'])->name('borrow_log.on_borrow');
+        Route::get('/borrow_log/on_return/{member_id}/{book_id}/{borrow_id}', [BorrowLogController::class, 'on_return'])->name('borrow_log.on_return');
         Route::resources([
             'member' => MemberController::class,
             'author' => AuthorController::class,

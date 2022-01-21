@@ -44,8 +44,7 @@ class BookCategorySeeder extends Seeder
         ];
 
         foreach($books as $book){
-            $book = Book::find($book['id']);
-            $book->categories()->attach($book['categories']);
+            Book::find($book['id'])->categories()->attach($book['categories']);
         }
     }
 }

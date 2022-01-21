@@ -21,7 +21,7 @@ class BookSeeder extends Seeder
                 'code' => 'BK-001',
                 'book' => 'Eiti Shikkusu (86)',
                 'author_id' => 1,
-                'cover' => '',
+                'cover' => url('storage/images/1/cover1.jpg'),
                 'summary' => 'Lorem Ipsum Dolor Sit Amet',
                 'stock' => 5,
             ],
@@ -30,7 +30,7 @@ class BookSeeder extends Seeder
                 'code' => 'BK-002',
                 'book' => 'Bokutachi no Remake',
                 'author_id' => 5,
-                'cover' => '',
+                'cover' => url('storage/images/1/cover2.jpg'),
                 'summary' => 'Lorem Ipsum Dolor Sit Amet',
                 'stock' => 10,
             ],
@@ -39,7 +39,7 @@ class BookSeeder extends Seeder
                 'code' => 'BK-003',
                 'book' => 'Solo Leveling',
                 'author_id' => 3,
-                'cover' => '',
+                'cover' => url('storage/images/1/cover3.jpg'),
                 'summary' => 'Lorem Ipsum Dolor Sit Amet',
                 'stock' => 8,
             ],
@@ -48,7 +48,7 @@ class BookSeeder extends Seeder
                 'code' => 'BK-004',
                 'book' => 'Is It Wrong to Try to Pick Up Girls in a Dungeon?',
                 'author_id' => 2,
-                'cover' => '',
+                'cover' => url('storage/images/1/cover4.jpg'),
                 'summary' => 'Lorem Ipsum Dolor Sit Amet',
                 'stock' => 15,
             ],
@@ -57,12 +57,12 @@ class BookSeeder extends Seeder
                 'code' => 'BK-005',
                 'book' => 'FFF-Class Trashero',
                 'author_id' => 4,
-                'cover' => '',
+                'cover' => url('storage/images/1/cover5.jpg'),
                 'summary' => 'Lorem Ipsum Dolor Sit Amet',
                 'stock' => 15,
             ]
         ];
-
+ 
         foreach($books as $book){
             Book::create($book);
         }

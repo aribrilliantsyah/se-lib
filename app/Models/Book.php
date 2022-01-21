@@ -18,6 +18,29 @@ class Book extends Model
         'author_id',
     ];
 
+    static public function stock($id){
+        $qRes = Book::find($id);
+        return $qRes->stock;
+    }
+
+    static public function increase($id){
+        $stock = self::stock($id);
+        $stock++;
+
+        Book::find($id)->update([
+            'stock' => $stock
+        ]);
+    }
+
+    static public function decrease($id){
+        $stock = self::stock($id);
+        $stock--;
+
+        Book::find($id)->update([
+            'stock' => $stock
+        ]);
+    }
+
     public function author(){
         return $this->belongsTo(Author::class);
     }

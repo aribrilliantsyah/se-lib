@@ -26,6 +26,9 @@
   <link rel="stylesheet" href="{{ asset('css/scrollbar.css') }}">
   <!-- Argon CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/argon.css?v=1.1.0') }}" type="text/css">
+  <script>
+    var base_url = "{{ url('').'/' }}"
+  </script>
 </head>
 
 <body>
@@ -74,6 +77,7 @@
   <script src="{{ asset('assets/vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
   <!-- Custom js -->
   <script src="{{ asset('js/datatables-language.js') }}"></script>
+  <script src="{{ asset('js/moment.min.js') }}"></script>
   @yield('scripts')
   <!-- Argon JS -->
   <script src="{{ asset('assets/js/argon.js?v=1.1.0') }}"></script>
