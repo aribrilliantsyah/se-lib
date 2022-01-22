@@ -65,7 +65,7 @@
             </div>
             <div class="form-group col-md-12">
               <button onclick="on_preview()" class="btn btn-sm btn-primary"><i class="fa fa-filter"></i> FILTER</button>
-              <button onclick="" class="btn btn-sm btn-danger"><i class="fa fa-file-pdf"></i> PDF</button>
+              <button onclick="on_export('pdf')" class="btn btn-sm btn-danger"><i class="fa fa-file-pdf"></i> PDF</button>
               <button onclick="" class="btn btn-sm btn-success"><i class="fa fa-file-excel"></i> EXCEL</button>
             </div>
           </div>
@@ -76,6 +76,7 @@
                   <th>Member</th>
                   <th>Book</th>
                   <th>Borrowed At</th>
+                  <th>Returned?</th>
                   <th>Returned At</th>
                   <th>Extended</th>
                   <th>Return Estimate</th>
@@ -140,7 +141,8 @@
               html += `<td>${response.data[i].member.full_name}</td>`
               html += `<td>${response.data[i].book.book}</td>`
               html += `<td>${moment(response.data[i].created_at).format('YYY-MM-DD HH:mm:ss')}</td>`
-              html += `<td>${moment(response.data[i].updated_at).format('YYY-MM-DD HH:mm:ss')}</td>`
+              html += `<td style="text-align: center;">${response.data[i].is_returned?'YES':'NO'}</td>`
+              html += `<td>${response.data[i].is_returned?moment(response.data[i].updated_at).format('YYY-MM-DD HH:mm:ss'): ''}</td>`
               html += `<td>${response.data[i].total_extended}</td>`
               html += `<td>${moment(response.data[i].return_estimate).format('YYYY-MM-DD')}</td>`
               let late = '';
@@ -148,20 +150,50 @@
                 let date1 = moment(response.data[i].updated_at, 'YYYY-MM-DD HH:mm:ss');
                 let date2 = moment(response.data[i].return_estimate, 'YYYY-MM-DD HH:mm:ss');
                 
-                late =  date1.isAfter(date2) ? '<span class="badge badge-danger"> YES </span>' : '<span class="badge badge-success"> NO </span>';
+                late =  date1.isAfter(date2) ? '<span class="badge badge-danger"> YES </span>' : '<span class="badge badge-danger"> NO </span>';
               }
-              html += `<td>${late}</td>`
+              html += `<td>${response.data[i].is_returned ? late : ''}</td>`
               html += `<td>${response.data[i].user_create.name}</td>`
               html += `<td>${response.data[i].user_update.name}</td>`
               html += '</tr>'
             }
           }else{
-            html = '<tr><td coslpan="9"> No data to display</td></tr>'
+            html = '<tr><td coslpan="9" style="text-align: center;"> No data to display</td></tr>'
           }
 
           $('#table-box').html(html)
         }
       }
+    });
+  }
+
+  function on_export(type){
+    let target = `${base_url}admin/borrow_log/on_export_report/${type}`
+    let year = $('#year').val()
+    let month = $('#month').val()
+    let member = $('#member').val(); 
+    let data = {
+      year: year,
+      month: month,
+      member: member,
+    }
+    
+    $.ajax({
+      url: target,
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      type: 'POST',
+      data: data,
+      xhrFields: {
+        responseType: 'blob'
+      },
+    }).done((response) => {
+      var blob = new Blob([response]);
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `Borrow_log_${year}_${month}.pdf`;
+      link.click();
     });
   }
 </script>

@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Dummy;
+use App\Models\Book;
+use App\Models\BorrowLog;
+use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -13,11 +18,22 @@ class DashboardController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function admin() {
+        $popular_book = DB::table('borrow_logs')
+        ->select('borrow_logs.book_id', DB::raw('count(*) as total'), 'books.book as title')
+        ->leftJoin('books','books.id', '=', 'borrow_logs.book_id')
+        ->groupBy('borrow_logs.book_id', 'books.book')
+        ->get();
+
         $data = [
-            'borrowing_history' => Dummy::borrowing_history(),
-            'popular_books' => Dummy::popular_books()
+            'borrowing_history' => BorrowLog::with(['book', 'member'])->limit(10)->orderBy('created_at', 'desc')->get(),
+            'popular_books' => $popular_book,
+            'total_borrowed' =>BorrowLog::all()->count(),
+            'total_member' => Member::all()->count(),
+            'total_admin' => User::all()->count(),
+            'total_returned' => BorrowLog::where('is_returned', 1)->get()->count(),
         ];
 
+        // dd($data);
         return view('pages.dashboard.admin', $data);
     }
 

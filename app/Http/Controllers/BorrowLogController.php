@@ -9,6 +9,7 @@ use App\Models\BorrowLog;
 use App\Models\Member;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PDF;
 
 class BorrowLogController extends Controller
 {
@@ -299,5 +300,47 @@ class BorrowLogController extends Controller
         return response()->json([
             'status' => false
         ]);
+    }
+    /**
+     * Process a export report transaction.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function on_export_report(Request $request, $type){
+        $month = $request->month;
+        $year = $request->year;
+        $member = $request->member;
+        
+        if(isset($month) && isset($year)){
+            $query = BorrowLog::with(['book', 'member', 'user_create', 'user_update'])->whereMonth('created_at', $month)
+                        ->whereYear('created_at', $year);
+            if($member != '' && count($member) > 0){
+                $query->whereIn('member_id', $member);
+            }
+            $qRes = $query->get();
+
+            if($type == 'pdf'){
+                $pdf = PDF::loadView('pdf.borrow_log', [
+                    'borrow_log' => $qRes
+                ]);
+
+                $path = public_path('pdf');
+                $fileName = 'Borrow_log_'.$month.'_'.$year.'.pdf';
+                $pdf->save($path . '/' . $fileName);
+        
+                $pdf = public_path('pdf/'.$fileName);
+                return response()->download($pdf);
+            }
+        }
+
+        return null;
+    }
+
+    public function test(){
+        $qRes = BorrowLog::with(['book', 'member', 'user_create', 'user_update'])->get();
+        $pdf = PDF::loadView('pdf.borrow_log', [
+            'borrow_log' => $qRes
+        ]);
+        return $pdf->stream();
     }
 }
