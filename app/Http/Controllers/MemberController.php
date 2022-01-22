@@ -58,7 +58,7 @@ class MemberController extends Controller
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
-            'password' => $request->password,
+            'password' => bcrypt($request->password),
             'role_id' => 1,
             'avatar' => $photo,
         ]);
@@ -165,6 +165,15 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         //
+         $delete = $member->delete();
+        if($delete){
+            return response()->json([
+                'message' => 'Data Deleted Successfully!'
+            ]);
+        }
+        return response()->json([
+            'message' => 'Data Failed Successfully!'
+        ]);
     }
 
     /**
