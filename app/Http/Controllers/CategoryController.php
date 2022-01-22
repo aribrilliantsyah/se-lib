@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Dummy;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use App\DataTables\CategoryDataTable;
 class CategoryController extends Controller
 {
     /**
@@ -13,13 +13,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(CategoryDataTable $dataTable)
     {
-        //
-        $data = [
-            'collection' => Dummy::categories()
-        ];
-        return view('pages.category.list', $data);
+        return $dataTable->render('pages.category.list');
     }
 
     /**
@@ -30,6 +26,7 @@ class CategoryController extends Controller
     public function create()
     {
         //
+        return view('pages.category.create');
     }
 
     /**
@@ -41,6 +38,19 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'category' => 'required|max:255',
+        ]);
+
+        $trx = Category::create([
+            'category' => $request->category
+        ]);
+
+        if($trx){
+            return redirect()->route('category.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('category.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -63,6 +73,9 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         //
+        $data = $category;
+        $id = $data->id;
+        return view('pages.category.edit', compact('data', 'id'));
     }
 
     /**
@@ -75,6 +88,18 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         //
+        $rules = [
+            'category' => 'required|max:255',
+        ];
+        $request->validate($rules);
+        $request = $request->all();
+
+        $trx = $category->update($request);
+        if($trx){
+            return redirect()->route('category.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('category.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -86,5 +111,21 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+        try {
+            $delete = $category->delete();
+            if($delete){
+                return response()->json([
+                    'message' => 'Data Deleted Successfully!'
+                ]);
+            }
+            return response()->json([
+                'message' => 'Data Failed Successfully!'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Data Failed, this data is still used in other modules !'
+            ]);
+        }
+        
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Book extends Model
 {
@@ -47,5 +48,12 @@ class Book extends Model
 
     public function categories(){
         return $this->belongsToMany(Category::class);
+    }
+
+    public function generateCodeBook(){
+        $sql = "SELECT nextval('books_id_seq')";
+        $query = DB::select($sql);        
+        $num =isset($query) ? $query[0]->nextval : 0;
+        return 'BK-'.sprintf("%04d",$num+1);
     }
 }

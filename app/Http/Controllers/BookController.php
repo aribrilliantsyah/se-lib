@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Dummy;
 use App\Models\Book;
+use App\Models\Author;
+use App\Models\Category;
 use Illuminate\Http\Request;
-
+use App\DataTables\BooksDataTable;
+use DB;
 class BookController extends Controller
 {
     /**
@@ -13,14 +16,10 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(BooksDataTable $dataTable)
     {
         //
-        $data = [
-            'collection' => Dummy::books()
-        ];
-
-        return view('pages.book.list', $data);
+       return $dataTable->render('pages.book.list');
     }
 
     /**
@@ -31,6 +30,9 @@ class BookController extends Controller
     public function create()
     {
         //
+        $authors = Author::all();
+        $categories = Category::all();
+        return view('pages.book.create',compact('authors','categories'));
     }
 
     /**
@@ -42,6 +44,40 @@ class BookController extends Controller
     public function store(Request $request)
     {
         //
+
+        $request->validate([
+            'book' => 'required|max:255',
+            'summary' => 'required|max:255',
+            'stock' => 'required',
+            'author_id' => 'required',
+            'category_id' => 'required',
+            'cover' => '',
+        ]);
+        
+        $code = Book::generateCodeBook();
+        $trx = Book::create([
+            'code' => $code,
+            'book' => $request->book,
+            'summary' => $request->summary,
+            'stock' => $request->stock,
+            'author_id' => $request->author_id,
+            'cover' => $request->cover,
+        ]);
+        $book_id = $trx->id;
+        if(count($request->category_id) > 0){
+            foreach ($request->category_id as $dt) {
+                DB::table('book_category')->insert([
+                    'book_id' => $book_id,
+                    'category_id' => $dt,
+                ]);
+            }
+        }
+        if($trx){
+            return redirect()->route('book.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('book.index')->with(['error' => 'Data Failed to Save!']);
+        }
+       
     }
 
     /**
@@ -64,6 +100,16 @@ class BookController extends Controller
     public function edit(Book $book)
     {
         //
+        $data = $book;
+        $catAll = [];
+        foreach($data->categories as $dt)
+        {
+            $catAll[] = $dt->id;
+        } 
+        $id = $data->id;
+        $authors = Author::all();
+        $categories = Category::all();
+        return view('pages.book.edit', compact('data', 'id','authors','categories','catAll'));
     }
 
     /**
@@ -76,6 +122,34 @@ class BookController extends Controller
     public function update(Request $request, Book $book)
     {
         //
+        $request->validate([
+            'book' => 'required|max:255',
+            'summary' => 'required|max:255',
+            'stock' => 'required',
+            'author_id' => 'required',
+            'category_id' => 'required',
+            'cover' => '',
+        ]);
+        $req = $request->except(['category_id']);
+        $trx = $book->update($req);
+        
+        $book_id = $book->id;
+        if(count($request->category_id) > 0){
+            DB::table('book_category')->where('book_id', $book_id)->delete();
+
+            foreach ($request->category_id as $dt) {
+                DB::table('book_category')->insert([
+                    'book_id' => $book_id,
+                    'category_id' => $dt,
+                ]);
+            }
+        }
+
+        if($trx){
+            return redirect()->route('book.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('book.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -87,5 +161,20 @@ class BookController extends Controller
     public function destroy(Book $book)
     {
         //
+        try {
+            $delete = $book->delete();
+            if($delete){
+                return response()->json([
+                    'message' => 'Data Deleted Successfully!'
+                ]);
+            }
+            return response()->json([
+                'message' => 'Data Failed Successfully!'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Data Failed, this data is still used in other modules !'
+            ]);
+        }
     }
 }

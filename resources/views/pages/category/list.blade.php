@@ -2,10 +2,6 @@
 
 @section('title', 'Category')
 
-@section('styles')
-    
-@endsection
-
 @section('breadcrum')
   <div class="col-lg-6 col-7">
     <h6 class="h2 text-white d-inline-block mb-0">Category</h6>
@@ -28,37 +24,14 @@
               <h3 class="mb-0">List Category </h3>
             </div>
             <div class="col-4 text-right">
-              <a href="" class="btn btn-sm btn-primary"><i class="ni ni-fat-add"></i> Create</a>
+              <a href="{{ route('category.create') }}" class="btn btn-sm btn-primary btn-fab btn-icon btn-round"><i class="fas fa-plus-square"></i> Create New Data</a>
             </div>
           </div>
         </div>
         <div class="card-body">
+          @include('admin.alert')
           <div class="table-responsive py-4">
-            <table class="table dt_table table-flush table-vertical-align" >
-              <thead class="thead-light">
-                <tr>
-                  <th>Action</th>
-                  <th>Category Name</th>
-                </tr>
-              </thead>
-              <tbody>
-              @foreach ($collection as $item)
-                <tr>
-                  <td>
-                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-                  </td>
-                  <td>{{ $item['category'] }}</td>
-                </tr>
-              @endforeach
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Action</th>
-                  <th>Category Name</th>
-                </tr>
-              </tfoot>
-            </table>
+            {!! $dataTable->table(['class' => 'table dt_table table-flush table-vertical-align']) !!}
           </div>
         </div>
       </div>
@@ -66,6 +39,47 @@
   </div>
 @endsection
 
+
 @section('scripts')
-    
+<script src="{{ asset('/vendor/datatables/buttons.server-side.js') }}"></script>
+{!! $dataTable->scripts() !!}
+
+<script>
+  function destroy(target, id){
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#007bff',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      console.log(result)
+      if (result.value) {
+        $.ajax({
+          url: target,
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          type: 'DELETE',
+          data: {
+            id: id
+          },
+          success: function (response){
+            Swal.fire(
+              response.message,
+              '',
+              'info'
+            )
+            setTimeout(() => {
+              //Change to id datatable
+              window.LaravelDataTables["category-table"].draw()
+            }, 500);
+          }
+        });
+      }
+    })
+  }
+</script>
 @endsection

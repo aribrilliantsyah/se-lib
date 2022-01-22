@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Dummy;
 use App\Models\Author;
 use Illuminate\Http\Request;
+use App\DataTables\AuthorDataTable;
 
 class AuthorController extends Controller
 {
@@ -13,14 +14,10 @@ class AuthorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(AuthorDataTable $dataTable)
     {
         //
-        $data = [
-            'collection' => Dummy::authors()
-        ];
-
-        return view('pages.author.list', $data);
+        return $dataTable->render('pages.author.list');
     }
 
     /**
@@ -31,6 +28,7 @@ class AuthorController extends Controller
     public function create()
     {
         //
+        return view('pages.author.create');
     }
 
     /**
@@ -42,6 +40,19 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'author' => 'required|max:255',
+        ]);
+
+        $trx = Author::create([
+            'author' => $request->author
+        ]);
+
+        if($trx){
+            return redirect()->route('author.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('author.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -64,6 +75,9 @@ class AuthorController extends Controller
     public function edit(Author $author)
     {
         //
+        $data = $author;
+        $id = $data->id;
+        return view('pages.author.edit', compact('data', 'id'));
     }
 
     /**
@@ -76,6 +90,18 @@ class AuthorController extends Controller
     public function update(Request $request, Author $author)
     {
         //
+        $rules = [
+            'author' => 'required|max:255',
+        ];
+        $request->validate($rules);
+        $request = $request->all();
+
+        $trx = $author->update($request);
+        if($trx){
+            return redirect()->route('author.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('author.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -87,5 +113,20 @@ class AuthorController extends Controller
     public function destroy(Author $author)
     {
         //
+        try {
+            $delete = $author->delete();
+            if($delete){
+                return response()->json([
+                    'message' => 'Data Deleted Successfully!'
+                ]);
+            }
+            return response()->json([
+                'message' => 'Data Failed Successfully!'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Data Failed, this data is still used in other modules !'
+            ]);
+        }
     }
 }
