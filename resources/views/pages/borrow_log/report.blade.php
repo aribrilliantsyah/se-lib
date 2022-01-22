@@ -25,14 +25,50 @@
         <div class="card-header">
           <div class="row align-items-center">
             <div class="col-8">
-              <h3 class="mb-0">Report </h3>
-            </div>
-            <div class="col-4 text-right">
-              <a href="" class="btn btn-sm btn-primary"><i class="fa fa-file-pdf"></i> Print</a>
+              <h3 class="mb-0">Report</h3>
             </div>
           </div>
         </div>
         <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="alert alert-info">
+                <span class="alert-inner--icon"><i class="fas fa-info-circle"></i></span>
+                <span class="alert-inner--text"><strong>Info!</strong> Please don't fill in members to display all members </span>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Month</label>
+              <select class="form-control select2" id="month">
+                <option selected disabled>[ Choose Month ]</option>
+                @foreach ($months as $key => $month)
+                <option value="{{ $key }}" @if($key == date('m')) selected @endif>{{ $month }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Year</label>
+              <select class="form-control select2" id="year">
+                <option selected disabled>[ Choose Year ]</option>
+                @foreach ($years as $key => $year)
+                <option value="{{ $year }}" @if($year == date('Y')) selected @endif>{{ $year }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Member</label>
+              <select class="form-control select2" id="member" multiple>
+                @foreach ($members as $member)
+                <option value="{{ $member->id }}">{{ $member->code }} - {{ $member->full_name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group col-md-12">
+              <button onclick="on_preview()" class="btn btn-sm btn-primary"><i class="fa fa-filter"></i> FILTER</button>
+              <button onclick="" class="btn btn-sm btn-danger"><i class="fa fa-file-pdf"></i> PDF</button>
+              <button onclick="" class="btn btn-sm btn-success"><i class="fa fa-file-excel"></i> EXCEL</button>
+            </div>
+          </div>
           <div class="table-responsive py-4">
             <table class="table align-items-center table-flush">
               <thead class="thead-light">
@@ -41,12 +77,15 @@
                   <th>Book</th>
                   <th>Borrowed At</th>
                   <th>Returned At</th>
+                  <th>Extended</th>
                   <th>Return Estimate</th>
                   <th>Late Back?</th>
+                  <th>Operator (Borrowing)</th>
+                  <th>Operator (Return)</th>
                 </tr>
               </thead>
-              <tbody>
-                @foreach ($collection as $item)
+              <tbody id="table-box">
+                {{-- @foreach ($collection as $item)
                 <tr>
                   <td>{{ $item['member'] }}</td>
                   <td>{{ $item['book'] }}</td>
@@ -57,7 +96,7 @@
                     <span class='badge badge-{{ $item['late_back'] == 'YES' ? 'success': 'danger' }}'>YES</span>
                   </td>
                 </tr>
-                @endforeach
+                @endforeach --}}
               </tbody>
             </table>
           </div>
@@ -68,5 +107,62 @@
 @endsection
 
 @section('scripts')
-    
+<script>
+  $(() => {
+    on_preview()
+  })
+
+  function on_preview(){
+    let target = `${base_url}admin/borrow_log/on_preview_report`
+    let year = $('#year').val()
+    let month = $('#month').val()
+    let member = $('#member').val(); 
+    let data = {
+      year: year,
+      month: month,
+      member: member,
+    }
+    console.log(data)
+
+    $.ajax({
+      url: target,
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      type: 'POST',
+      data: data,
+      success: function (response){
+        if(response.status){
+          let html = '';
+          if(response.data.length > 0){
+            for(let i = 0; i < response.data.length; i++){
+              html += '<tr>'
+              html += `<td>${response.data[i].member.full_name}</td>`
+              html += `<td>${response.data[i].book.book}</td>`
+              html += `<td>${moment(response.data[i].created_at).format('YYY-MM-DD HH:mm:ss')}</td>`
+              html += `<td>${moment(response.data[i].updated_at).format('YYY-MM-DD HH:mm:ss')}</td>`
+              html += `<td>${response.data[i].total_extended}</td>`
+              html += `<td>${moment(response.data[i].return_estimate).format('YYYY-MM-DD')}</td>`
+              let late = '';
+              if(response.data[i].return_estimate != ''){
+                let date1 = moment(response.data[i].updated_at, 'YYYY-MM-DD HH:mm:ss');
+                let date2 = moment(response.data[i].return_estimate, 'YYYY-MM-DD HH:mm:ss');
+                
+                late =  date1.isAfter(date2) ? '<span class="badge badge-danger"> YES </span>' : '<span class="badge badge-success"> NO </span>';
+              }
+              html += `<td>${late}</td>`
+              html += `<td>${response.data[i].user_create.name}</td>`
+              html += `<td>${response.data[i].user_update.name}</td>`
+              html += '</tr>'
+            }
+          }else{
+            html = '<tr><td coslpan="9"> No data to display</td></tr>'
+          }
+
+          $('#table-box').html(html)
+        }
+      }
+    });
+  }
+</script>
 @endsection

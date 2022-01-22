@@ -76,17 +76,18 @@ class BorrowBooksDataTable extends DataTable
     {
         return [
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
             Column::computed('image')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('book'),
-            Column::make('author.author'),
+            Column::make('author.author')
+                ->title('Author'),
             Column::make('stock'),
             Column::computed('category')
                 ->exportable(false)

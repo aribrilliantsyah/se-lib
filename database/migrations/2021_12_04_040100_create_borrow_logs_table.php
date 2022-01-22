@@ -21,7 +21,10 @@ class CreateBorrowLogsTable extends Migration
             $table->foreign('member_id')->references('id')->on('members');
             $table->integer('is_returned');
             $table->dateTime('return_estimate');
+            $table->integer('total_extended')->default(0);
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(1);
+            $table->unsignedBigInteger('updated_by')->default(1);
         });
     }
 

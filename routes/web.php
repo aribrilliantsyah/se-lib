@@ -51,6 +51,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/borrow_log/borrow/{member_id}', [BorrowLogController::class, 'borrow'])->name('borrow_log.borrow');
         Route::get('/borrow_log/on_borrow/{member_id}/{book_id}', [BorrowLogController::class, 'on_borrow'])->name('borrow_log.on_borrow');
         Route::get('/borrow_log/on_return/{member_id}/{book_id}/{borrow_id}', [BorrowLogController::class, 'on_return'])->name('borrow_log.on_return');
+        Route::get('/borrow_log/on_extend/{member_id}/{book_id}/{borrow_id}', [BorrowLogController::class, 'on_extend'])->name('borrow_log.on_extend');
+        Route::post('/borrow_log/on_preview_report', [BorrowLogController::class, 'on_preview_report'])->name('borrow_log.on_preview_report');
         Route::resources([
             'member' => MemberController::class,
             'author' => AuthorController::class,

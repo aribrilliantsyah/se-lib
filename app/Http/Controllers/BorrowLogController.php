@@ -7,6 +7,7 @@ use App\Helpers\Dummy;
 use App\Models\Book;
 use App\Models\BorrowLog;
 use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class BorrowLogController extends Controller
@@ -97,9 +98,31 @@ class BorrowLogController extends Controller
     public function report()
     {
         //
-        $data = [
-            'collection' => Dummy::borrow_logs()
+        $data['months'] = [
+            1 => 'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July ',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
         ];
+
+        $years = [];
+
+        $year = date('Y') - 10;
+        $end = date('Y');
+        while($year <= $end){
+            $years[] = $year++;
+        }
+        $data['years'] = $years;
+        $data['members'] = Member::all();
+
         return view('pages.borrow_log.report', $data);
     }
 
@@ -114,7 +137,8 @@ class BorrowLogController extends Controller
             $json = [];
         }else{
             $search = $searchTerm;
-            $result = Member::where('full_name', 'like', '%'.$search.'%')->get();
+            $result = Member::where('full_name', 'like', '%'.$search.'%')
+                        ->orWhere('code', 'like', '%'.$search.'%')->get();
             $json = [];
 
             foreach($result as $item){
@@ -202,7 +226,7 @@ class BorrowLogController extends Controller
             }
             return redirect('admin/borrow_log/borrow/'.$member_id)->with(['success' => 'Successfully added to borrow list!']); 
         }else{
-            return redirect('admin/borrow_log/borrow/'.$member_id)->with(['error' => 'Stock of book is 0!']);
+            return redirect('admin/borrow_log/borrow/'.$member_id)->with(['info' => 'Stock of book is 0!']);
         }
     }
 
@@ -221,5 +245,59 @@ class BorrowLogController extends Controller
             Book::increase($book_id);
         }
         return redirect('admin/borrow_log?member_id='.$member_id)->with(['success' => 'Successfully returned the book!']); 
+    }
+
+    /**
+     * Process a extend transaction.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function on_extend($member_id, $book_id, $borrow_id){
+        $data = BorrowLog::find($borrow_id);
+        if(isset($data->return_estimate)){
+            $new_date = Carbon::parse($data->return_estimate)->add('7 days');
+            if($data->total_extended >= 3){
+                return redirect('admin/borrow_log?member_id='.$member_id)->with(['info' => 'Extend the book can\'t be more than 3 times!']); 
+            }
+            
+            $updated = $data->update([
+                'return_estimate' => $new_date,
+                'total_extended' =>  $data->total_extended++
+            ]);
+
+            if($updated){
+                return redirect('admin/borrow_log?member_id='.$member_id)->with(['success' => 'Successfully extended the book!']); 
+            }
+        }
+        return redirect('admin/borrow_log?member_id='.$member_id)->with(['error' => 'Something went wrong please try again!']); 
+    }
+    
+    /**
+     * Process a preview report transaction.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function on_preview_report(Request $request){
+        $month = $request->month;
+        $year = $request->year;
+        $member = $request->member;
+        
+        if(isset($month) && isset($year)){
+            $query = BorrowLog::with(['book', 'member', 'user_create', 'user_update'])->whereMonth('created_at', $month)
+                        ->whereYear('created_at', $year);
+            if($member != '' && count($member) > 0){
+                $query->whereIn('member_id', $member);
+            }
+            $qRes = $query->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $qRes
+            ]);
+        }
+
+        return response()->json([
+            'status' => false
+        ]);
     }
 }
