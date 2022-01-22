@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\DataTables\MembersDataTable;
 
 class MemberController extends Controller
 {
@@ -15,13 +17,10 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(MembersDataTable $dataTable)
     {
         //
-        $data = [
-            'collection' => Dummy::members()
-        ];
-        return view('pages.member.list', $data);
+        return $dataTable->render('pages.member.list');
     }
 
     /**
@@ -32,6 +31,7 @@ class MemberController extends Controller
     public function create()
     {
         //
+        return view('pages.member.create');
     }
 
     /**
@@ -43,6 +43,42 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'name' => 'required|max:255',
+            'gender' => 'required',
+            'profession' => 'required',
+            'address' => 'required',
+            'username' => 'required|alpha_dash|unique:users,username|max:100',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|alpha_dash',
+            'photo' => '',
+        ]);
+        $photo = $request->photo;
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role_id' => 1,
+            'avatar' => $photo,
+        ]);
+        $user_id = $user->id;
+        $code = Member::generateCodeMember();
+        $trx = Member::create([
+            'code' => $code,
+            'full_name' => $request->name,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'user_id'=>$user_id,
+            'profession' => $request->profession,
+            'photo' => $photo,
+        ]);        
+
+        if($trx){
+            return redirect()->route('member.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('member.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -54,6 +90,9 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         //
+        $data = $member;
+        $id = $data->id;
+        return view('pages.member.show', compact( 'data'));
     }
 
     /**
@@ -65,6 +104,9 @@ class MemberController extends Controller
     public function edit(Member $member)
     {
         //
+        $data = $member;
+        $id = $data->id;
+        return view('pages.member.edit', compact('data', 'id'));
     }
 
     /**
@@ -77,6 +119,41 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         //
+         $rules = [
+            
+            'name' => 'required|max:255',
+            'gender' => 'required',
+            'profession' => 'required',
+            'address' => 'required',
+            'username' => 'required|alpha_dash|unique:users,username,'.$member->user_id.'|max:100',
+            'email' => 'required|email|unique:users,email,'.$member->user_id,
+            'password' => 'required|alpha_dash',
+            'photo' => '',
+        ];
+
+        
+         $request->validate($rules);
+         $photo = $request->photo;
+         $user = User::where('id', $member->user_id)->Update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'avatar' => $photo,
+        ]);
+      
+        $trx =  $member->update([
+            'full_name' => $request->name,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'profession' => $request->profession,
+            'photo' => $photo,
+        ]);        
+
+        if($trx){
+            return redirect()->route('member.index')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('member.index')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 
     /**
@@ -88,6 +165,15 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         //
+         $delete = $member->delete();
+        if($delete){
+            return response()->json([
+                'message' => 'Data Deleted Successfully!'
+            ]);
+        }
+        return response()->json([
+            'message' => 'Data Failed Successfully!'
+        ]);
     }
 
     /**

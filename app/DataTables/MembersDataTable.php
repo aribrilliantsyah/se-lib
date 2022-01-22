@@ -2,14 +2,14 @@
 
 namespace App\DataTables;
 
-use App\Models\Book;
+use App\Models\Member;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class BooksDataTable extends DataTable
+class MembersDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -21,34 +21,25 @@ class BooksDataTable extends DataTable
     {
         return datatables()
             ->eloquent($query)
-            ->addColumn('cover', function ($data) {
-                $cover = $data->avatar == '' ? asset('assets/img/theme/team-3.jpg') : $data->avatar;
-                return '<img class="avatar rounded-circle" src="'.$cover.'">';
-            })
-            ->addColumn('author', function ($data) {
-                return $data->author->author;
-            })
-            ->addColumn('category', function($data) {
-                $html = '';
-                if(count($data->categories) > 0){
-                    $html = '<span class="badge badge-info">'.$data->categories->implode('category', '</span> <span class="badge badge-info">').'</span>';
-                }
-                return $html;
+            ->addColumn('image', function ($data) {
+                $image = $data->avatar == '' ? asset('assets/img/theme/team-3.jpg') : $data->avatar;
+                return '<img class="avatar rounded-circle" src="'.$image.'">';
             })
             ->addColumn('action', function ($data) {
-                return '<a href="'.route('book.edit', $data->id).'" class="btn btn-sm btn-primary btn-fab btn-icon btn-round"><i class="fas fa-edit"></i></a>
-                <button onclick="destroy(`'.route('book.destroy',$data->id).'`, `'.$data->id.'`)" class="btn btn-sm btn-danger btn-fab btn-icon btn-round"><i class="fas fa-trash"></i></button>';
+                return '<a href="'.route('member.edit', $data->id).'" class="btn btn-sm btn-primary btn-fab btn-icon btn-round"><i class="fas fa-edit"></i></a>
+                <button onclick="destroy(`'.route('member.destroy',$data->id).'`, `'.$data->id.'`)" class="btn btn-sm btn-danger btn-fab btn-icon btn-round"><i class="fas fa-trash"></i></button>
+                <a href="'.route('member.show', $data->id).'" class="btn btn-sm btn-info btn-fab btn-icon btn-round"><i class="fas fa-eye"></i></a>';
             })
-            ->rawColumns(['cover', 'author','category','action']);
+            ->rawColumns(['image', 'action']);
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\Book $model
+     * @param \App\Models\Member $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Book $model)
+    public function query(Member $model)
     {
         return $model->newQuery();
     }
@@ -61,7 +52,7 @@ class BooksDataTable extends DataTable
     public function html()
     {
         return $this->builder()
-                    ->setTableId('books-table')
+                    ->setTableId('members-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     ->orderBy(1)
@@ -87,19 +78,17 @@ class BooksDataTable extends DataTable
                   ->printable(false)
                   ->width(60)
                   ->addClass('text-center'),
-            Column::make('cover')
-                  ->addClass('text-center'),
-            Column::computed('code')
-                  ->title('Book Code'),
-            Column::computed('book')
-                 ->title('title'),
-            Column::computed('author')
-                 ->title('Author Name'),
-            Column::computed('category')
-                 ->title('Categories'),
-            Column::make('summary'),
+            Column::computed('image')
+                  ->exportable(false)
+                  ->printable(false)
+                  ->width(60)
+                  ->addClass('text-center')
+                  ->title('photo'),
+            Column::make('code'),
+            Column::make('full_name'),
+            Column::make('gender'),
+            Column::make('address'),
         ];
-            
     }
 
     /**
@@ -109,6 +98,6 @@ class BooksDataTable extends DataTable
      */
     protected function filename()
     {
-        return 'Books_' . date('YmdHis');
+        return 'Members_' . date('YmdHis');
     }
 }
