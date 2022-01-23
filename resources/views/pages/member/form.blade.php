@@ -1,7 +1,7 @@
 
 <div class="form-group">
   <label>Full Name</label>
-  <input type="text" name="name" class="form-control" placeholder="Full Name" value="{{ old('name', @$data->name) }}">
+  <input type="text" name="name" class="form-control" placeholder="Full Name" value="{{ old('name', @$data->full_name) }}">
   @if($errors->has('name'))
     <span class="text-danger text-sm">{{ $errors->first('name') }}</span>
   @endif
@@ -27,8 +27,8 @@
   @endif
 </div>
 <div class="form-group">
-  <label>Professiom</label>
-  <input type="text" name="profession" class="form-control" placeholder="Professiom" value="{{ old('profession', @$data->profession) }}">
+  <label>Profession</label>
+  <input type="text" name="profession" class="form-control" placeholder="Profession" value="{{ old('profession', @$data->profession) }}">
   @if($errors->has('profession'))
     <span class="text-danger text-sm">{{ $errors->first('profession') }}</span>
   @endif
@@ -36,14 +36,14 @@
 
 <div class="form-group">
   <label>Username</label>
-  <input type="text" name="username" class="form-control" placeholder="Username" value="{{ old('username', @$data->username) }}">
+  <input type="text" name="username" class="form-control" placeholder="Username" value="{{ old('username', @$data->user->username) }}">
   @if($errors->has('username'))
     <span class="text-danger text-sm">{{ $errors->first('username') }}</span>
   @endif
 </div>
 <div class="form-group">
   <label>Email</label>
-  <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email', @$data->email) }}">
+  <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email', @$data->user->email) }}">
   @if($errors->has('email'))
     <span class="text-danger text-sm">{{ $errors->first('email') }}</span>
   @endif
@@ -72,7 +72,7 @@
   </div>
   <div id="holder" style="margin-top:15px;max-height:100px;">
     @if(@$data->photo)
-      <img src="{{$data->photo}}" style="height:100px;">
+      <img src="{{$data->photo}}" class="prev-image">
     @endif
   </div>
   @if($errors->has('photo'))
@@ -81,6 +81,6 @@
 </div>
 <div class="form-group">
   <button id="btn-save" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
-  <button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>
+  {{--<button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>--}}
   <a href="{{ route('member.index') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back</a>
 </div>  

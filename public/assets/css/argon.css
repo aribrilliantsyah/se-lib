@@ -29642,3 +29642,10 @@ html:not([dir='rtl']) .noUi-horizontal .noUi-handle
     width: 100px;
     border-radius: 8px;
 }
+
+.prev-image{
+    height: 5rem;
+    width: 5rem;
+    object-fit: cover;
+    border-radius: 10px;
+}

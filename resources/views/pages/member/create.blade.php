@@ -15,9 +15,9 @@
   <h6 class="h2 text-white d-inline-block mb-0">Member</h6>
   <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
     <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-      <li class="breadcrumb-item"><a href="#"><i class="ni ni-settings"></i></a></li>
+      <li class="breadcrumb-item"><a href="#"><i class="ni ni-spaceship"></i></a></li>
       <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Member</a></li>
-      <li class="breadcrumb-item activer" aria-current="page">Create</li>
+      <li class="breadcrumb-item active" aria-current="page">Create</li>
     </ol>
   </nav>
 </div>

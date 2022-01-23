@@ -27,7 +27,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase text-muted mb-0">All Members</h5>
-              <span class="h2 font-weight-bold mb-0">5</span>
+              <span class="h2 font-weight-bold mb-0">{{ $total_member }}</span>
             </div>
             <div class="col-auto">
               <div class="icon icon-shape bg-orange text-white rounded-circle shadow">
@@ -49,7 +49,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase text-muted mb-0">Books Borrowed</h5>
-              <span class="h2 font-weight-bold mb-0">10</span>
+              <span class="h2 font-weight-bold mb-0">{{ $total_borrowed }}</span>
             </div>
             <div class="col-auto">
               <div class="icon icon-shape bg-blue text-white rounded-circle shadow">
@@ -71,7 +71,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase text-muted mb-0">TOTAL ADMIN</h5>
-              <span class="h2 font-weight-bold mb-0">5</span>
+              <span class="h2 font-weight-bold mb-0">{{ $total_admin }}</span>
             </div>
             <div class="col-auto">
               <div class="icon icon-shape bg-green text-white rounded-circle shadow">
@@ -93,7 +93,7 @@
           <div class="row">
             <div class="col">
               <h5 class="card-title text-uppercase text-muted mb-0">BOOKS RETURNED</h5>
-              <span class="h2 font-weight-bold mb-0">5</span>
+              <span class="h2 font-weight-bold mb-0">{{ $total_returned }}</span>
             </div>
             <div class="col-auto">
               <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -118,7 +118,7 @@
               <h3 class="mb-0">Borrowing history</h3>
             </div>
             <div class="col text-right">
-              <a href="" class="btn btn-sm btn-primary">See all</a>
+              <a href="{{ route('borrow_log.index') }}" class="btn btn-sm btn-primary">See all</a>
             </div>
           </div>
         </div>
@@ -136,11 +136,11 @@
             <tbody>
               @foreach ($borrowing_history as $item)
                 <tr>
-                  <th scope="row">{{ $item['member'] }}</th>
-                  <td><span class="badge badge-info">{{ $item['book'] }}</span></td>
-                  <td>{{ date('d/m/Y', strtotime($item['date_transaction'])) }}</td>
+                  <th scope="row">{{ $item->member->full_name }}</th>
+                  <td><span class="badge badge-info">{{ $item->book->book }}</span></td>
+                  <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }}</td>
                   <td>
-                    <span class='badge badge-{{ $item['returned'] == 'yes' ? 'success': 'danger' }}'>YES</span>
+                    <span class='badge badge-{{ $item->is_returned == 1 ? 'success': 'danger' }}'>{{ $item->is_returned == 1 ? 'YES': 'NO' }}</span>
                   </td>
                 </tr>
               @endforeach
@@ -157,7 +157,7 @@
               <h3 class="mb-0">Popular Books</h3>
             </div>
             <div class="col text-right">
-              <a href="" class="btn btn-sm btn-primary">See all</a>
+              <a href="{{ route('borrow_log.index') }}" class="btn btn-sm btn-primary">See all</a>
             </div>
           </div>
         </div>
@@ -174,15 +174,19 @@
             <tbody>
               @foreach ($popular_books as $item)   
               <tr>
-                <th scope="row">{{ $item['book'] }}</th>
-                <td>{{ $item['borrower'] }}</td>
+                <th scope="row">{{ $item->title }}</th>
+                <td>{{ $item->total }}</td>
                 <td>
                   <div class="d-flex align-items-center">
-                    <span class="mr-2">{{ $item['percent'] }}%</span>
+                    @php
+                      $percent = $item->total/$total_borrowed*100;    
+                      $percent = round($percent);
+                    @endphp
+                    <span class="mr-2">{{ $percent }}%</span>
                     <div>
                       <div class="progress">
-                        <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="{{ $item['percent'] }}" aria-valuemin="0" 
-                        aria-valuemax="100" style="width: {{ $item['percent'] }}%;"></div>
+                        <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="{{ $percent }}" aria-valuemin="0" 
+                        aria-valuemax="100" style="width: {{ $percent }}%;"></div>
                       </div>
                     </div>
                   </div>

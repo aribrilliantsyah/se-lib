@@ -19,11 +19,13 @@ class CreateMembersTable extends Migration
             $table->string('full_name');
             $table->string('address');
             $table->string('gender');
-            $table->string('photo');
+            $table->string('photo')->nullable();
             $table->string('profession');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(1);
+            $table->unsignedBigInteger('updated_by')->default(1);
         });
     }
 

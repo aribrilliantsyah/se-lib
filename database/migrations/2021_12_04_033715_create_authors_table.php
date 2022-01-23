@@ -17,6 +17,8 @@ class CreateAuthorsTable extends Migration
             $table->id();
             $table->string('author');
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(1);
+            $table->unsignedBigInteger('updated_by')->default(1);
         });
     }
 

@@ -20,6 +20,8 @@ class BookCategory extends Migration
             $table->foreign('book_id')->references('id')->on('books');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->unsignedBigInteger('created_by')->default(1);
+            $table->unsignedBigInteger('updated_by')->default(1);
         });
     }
 

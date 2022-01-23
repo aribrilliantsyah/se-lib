@@ -18,6 +18,8 @@ class CreateRolesTable extends Migration
             $table->string('role');
             $table->text('description');
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(1);
+            $table->unsignedBigInteger('updated_by')->default(1);
         });
     }
 

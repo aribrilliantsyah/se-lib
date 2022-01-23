@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use DB;
+
 class Member extends Model
 {
     use HasFactory;
+    use Blameable;
 
     protected $fillable = [
         'code',
@@ -23,10 +26,14 @@ class Member extends Model
         return $this->hasMany(BorrowLog::class);
     }
 
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
     public function generateCodeMember(){
-        $sql = "SELECT nextval('members_id_seq')";
-        $query = DB::select($sql);        
-        $num =isset($query) ? $query[0]->nextval : 0;
+        $sql = "SHOW TABLE status LIKE 'members';";
+        $query = DB::select($sql);     
+        $num =isset($query) ? $query[0]->Auto_increment : 0;
         return 'MBR-'.sprintf("%04d",$num+1);
     }
 }

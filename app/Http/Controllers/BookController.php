@@ -50,7 +50,7 @@ class BookController extends Controller
             'summary' => 'required|max:255',
             'stock' => 'required',
             'author_id' => 'required',
-            'category_id' => 'required',
+            'category_id' => 'required|array',
             'cover' => '',
         ]);
         
@@ -63,15 +63,9 @@ class BookController extends Controller
             'author_id' => $request->author_id,
             'cover' => $request->cover,
         ]);
-        $book_id = $trx->id;
-        if(count($request->category_id) > 0){
-            foreach ($request->category_id as $dt) {
-                DB::table('book_category')->insert([
-                    'book_id' => $book_id,
-                    'category_id' => $dt,
-                ]);
-            }
-        }
+        
+        Book::find($trx->id)->categories()->attach($request->category_id);
+
         if($trx){
             return redirect()->route('book.index')->with(['success' => 'Data Saved Successfully!']);
         }else{
@@ -127,23 +121,13 @@ class BookController extends Controller
             'summary' => 'required|max:255',
             'stock' => 'required',
             'author_id' => 'required',
-            'category_id' => 'required',
+            'category_id' => 'required|array',
             'cover' => '',
         ]);
         $req = $request->except(['category_id']);
         $trx = $book->update($req);
         
-        $book_id = $book->id;
-        if(count($request->category_id) > 0){
-            DB::table('book_category')->where('book_id', $book_id)->delete();
-
-            foreach ($request->category_id as $dt) {
-                DB::table('book_category')->insert([
-                    'book_id' => $book_id,
-                    'category_id' => $dt,
-                ]);
-            }
-        }
+        $book->categories()->sync($request->category_id);
 
         if($trx){
             return redirect()->route('book.index')->with(['success' => 'Data Saved Successfully!']);
@@ -162,6 +146,7 @@ class BookController extends Controller
     {
         //
         try {
+            $book->categories()->detach();
             $delete = $book->delete();
             if($delete){
                 return response()->json([

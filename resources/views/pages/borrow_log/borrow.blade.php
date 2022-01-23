@@ -31,7 +31,32 @@
         </div>
       </div>
       <div class="card-body" id="profile-information">
-        <div class="alert alert-info"><strong>Please</strong> wait until member information showed!</div>
+        <table class="table table-bordered">
+          <tr>
+            <td>Code</td>
+            <th>{{ $member->code }}</th>
+          </tr>
+          <tr>
+            <td>Full Name</td>
+            <th>{{ $member->full_name }}</th>
+          </tr>
+          <tr>
+            <td>Address</td>
+            <th>{{ $member->address }}</th>
+          </tr>
+          <tr>
+            <td>Gender</td>
+            <th>{{ $member->gender }}</th>
+          </tr>
+          <tr>
+            <td>Photo</td>
+            <th><img onerror="this.src='${base_url}assets/img/theme/team-3.jpg'" src="{{ $member->photo }}" class="avatar rounded-circle"></th>
+          </tr>
+          <tr>
+            <td>Profession</td>
+            <th>{{ $member->profession }}</th>
+          </tr>
+        </table>
       </div>
     </div>
   </div>
@@ -40,7 +65,7 @@
       <div class="card-header">
         <div class="row align-items-center">
           <div class="col-8">
-            <h3 class="mb-0">Borrow Books </h3>
+            <h3 class="mb-0"><i class="fas fa-book"></i> List Book </h3>
           </div>
           <div class="col-4 text-right">
             <a href="{{ url('admin/borrow_log?member_id='.$member_id) }}" class="btn btn-sm btn-primary"><i class="fas fa-chevron-left"></i> Back</a>
@@ -67,47 +92,5 @@ $(() => {
     get_info_member({{ @$member_id }});
   }, 2000);
 })
-
-function get_info_member(member_id){
-  let url = `${base_url}admin/borrow_log/member_detail/${member_id}`;
-  $.getJSON(url).done((res) => {
-    if(res.status != undefined && res.status){
-      let html = '<div class="alert alert-info"><strong>Please</strong> select one of any members!</div>'
-      if(res.data != '' || res.data.length > 0){
-        html = `<table class="table table-bordered">
-          <tr>
-            <td>Code</td>
-            <th>${res.data.code}</th>
-          </tr>
-          <tr>
-            <td>Full Name</td>
-            <th>${res.data.full_name}</th>
-          </tr>
-          <tr>
-            <td>Address</td>
-            <th>${res.data.address}</th>
-          </tr>
-          <tr>
-            <td>Gender</td>
-            <th>${res.data.gender}</th>
-          </tr>
-          <tr>
-            <td>Photo</td>
-            <th><img onerror="this.src='${base_url}assets/img/theme/team-3.jpg'" src="${res.data.photo}" class="avatar rounded-circle"></th>
-          </tr>
-          <tr>
-            <td>Profession</td>
-            <th>${res.data.profession}</th>
-          </tr>
-        </table>`;
-      }
-      g_member_id = member_id;
-      $('#profile-information').html(html)
-    }
-  }).fail((xhr) => {
-    console.log(res)
-    alert('Server is busy!')
-  })
-}
 </script>
 @endsection

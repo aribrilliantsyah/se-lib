@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use DB;
@@ -9,6 +10,7 @@ use DB;
 class Book extends Model
 {
     use HasFactory;
+    use Blameable;
 
     protected $fillable = [
         'code',
@@ -51,9 +53,9 @@ class Book extends Model
     }
 
     public function generateCodeBook(){
-        $sql = "SELECT nextval('books_id_seq')";
-        $query = DB::select($sql);        
-        $num =isset($query) ? $query[0]->nextval : 0;
-        return 'BK-'.sprintf("%04d",$num+1);
+        $sql = "SHOW TABLE status LIKE 'books';";
+        $query = DB::select($sql);     
+        $num =isset($query) ? $query[0]->Auto_increment : 0;
+        return 'MBR-'.sprintf("%04d",$num+1);
     }
 }

@@ -9,7 +9,7 @@
     <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
       <li class="breadcrumb-item"><a href="#"><i class="ni ni-settings"></i></a></li>
       <li class="breadcrumb-item"><a href="{{ route('category.index') }}">Category</a></li>
-      <li class="breadcrumb-item activer" aria-current="page">Update</li>
+      <li class="breadcrumb-item active" aria-current="page">Update</li>
     </ol>
   </nav>
 </div>

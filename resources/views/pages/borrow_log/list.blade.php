@@ -57,7 +57,7 @@
         <div class="card-header">
           <div class="row align-items-center">
             <div class="col-8">
-              <h3 class="mb-0"><i class="fas fa-book"></i> Detail Books</h3>
+              <h3 class="mb-0"><i class="fas fa-book"></i> Borrowed Books</h3>
             </div>
             <div class="col-4 text-right">
               <a href="" class="btn btn-sm btn-primary" id="borrow_button" style="display: none;"><i class="ni ni-fat-add"></i> Borrow</a>
@@ -76,6 +76,7 @@
                   <th>Returned?</th>
                   <th>Return Estimate</th>
                   <th>Late Back?</th>
+                  <th>Extended</th>
                   <th>Action</th>
                 </tr>
             </thead>
@@ -90,6 +91,7 @@
                   <th>Returned?</th>
                   <th>Return Estimate</th>
                   <th>Late Back?</th>
+                  <th>Extended</th>
                   <th>Action</th>
                 </tr>
               </tfoot>
@@ -171,10 +173,19 @@
           }
         },
         { 
+          "data": "total_extended", 
+          "className": "text-center",
+          "render": function(data, meta, row) {
+            return data;
+          }
+        },
+        { 
           "data": "id", 
           "render": function(data, meta, row) {
             if(row.is_returned == '0'){
-              return `<a href="${base_url}admin/borrow_log/on_return/${g_member_id}/${row.book_id}/${row.id}" class="btn btn-sm btn-primary"><i class="fas fa-undo"></i> Return</a>`;
+              let html = `<a href="${base_url}admin/borrow_log/on_return/${g_member_id}/${row.book_id}/${row.id}" class="btn btn-sm btn-primary"><i class="fas fa-undo"></i> Return</a> `;
+              html += `<a href="${base_url}admin/borrow_log/on_extend/${g_member_id}/${row.book_id}/${row.id}" class="btn btn-sm btn-warning"><i class="fas fa-circle"></i> Extend</a>`;
+              return html;
             }else{
               return '';
             }
