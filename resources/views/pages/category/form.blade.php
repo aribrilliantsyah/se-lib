@@ -8,6 +8,6 @@
 </div>
 <div class="form-group">
   <button id="btn-save" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
-  <button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>
+  {{--<button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>--}}
   <a href="{{ route('category.index') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back</a>
 </div>  

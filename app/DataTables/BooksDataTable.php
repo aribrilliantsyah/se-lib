@@ -22,8 +22,8 @@ class BooksDataTable extends DataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('cover', function ($data) {
-                $cover = $data->avatar == '' ? asset('assets/img/theme/team-3.jpg') : $data->avatar;
-                return '<img class="avatar rounded-circle" src="'.$cover.'">';
+                $cover = $data->cover == '' ? asset('assets/img/theme/team-3.jpg') : $data->cover;
+                return '<img class="book-cover" src="'.$cover.'">';
             })
             ->addColumn('author', function ($data) {
                 return $data->author->author;
@@ -109,6 +109,6 @@ class BooksDataTable extends DataTable
      */
     protected function filename()
     {
-        return 'Books_' . date('YmdHis');
+        return 'Books_'.date('YmdHis');
     }
 }

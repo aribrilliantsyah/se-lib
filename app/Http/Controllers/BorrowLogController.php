@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\BorrowBooksDataTable;
+use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Book;
 use App\Models\BorrowLog;
@@ -121,9 +122,10 @@ class BorrowLogController extends Controller
         while($year <= $end){
             $years[] = $year++;
         }
+        $data['member_id'] = isset(AuthCommon::user()->member->id) ? AuthCommon::user()->member->id : '';
         $data['years'] = $years;
-        $data['members'] = Member::all();
-
+        $data['members'] = $data['member_id'] != '' ? Member::where('id', $data['member_id'])->get() : Member::all();
+        // dd($data);
         return view('pages.borrow_log.report', $data);
     }
 
@@ -202,8 +204,10 @@ class BorrowLogController extends Controller
     {
         //
         $dataTable = new BorrowBooksDataTable();
+        $member = Member::find($member_id);
         return $dataTable->with('member_id', $member_id)->render('pages.borrow_log.borrow', [
-            'member_id' => $member_id 
+            'member_id' => $member_id,
+            'member' => $member
         ]);
     }
 
@@ -289,6 +293,11 @@ class BorrowLogController extends Controller
             if($member != '' && count($member) > 0){
                 $query->whereIn('member_id', $member);
             }
+
+            $member_id = isset(AuthCommon::user()->member->id) ? AuthCommon::user()->member->id : '';
+            if($member_id){
+                $query->where('member_id', $member_id);
+            }
             $qRes = $query->get();
 
             return response()->json([
@@ -317,12 +326,18 @@ class BorrowLogController extends Controller
             if($member != '' && count($member) > 0){
                 $query->whereIn('member_id', $member);
             }
+            
+            $member_id = isset(AuthCommon::user()->member->id) ? AuthCommon::user()->member->id : '';
+            if($member_id){
+                $query->where('member_id', $member_id);
+            }
             $qRes = $query->get();
 
             if($type == 'pdf'){
                 $pdf = PDF::loadView('pdf.borrow_log', [
                     'borrow_log' => $qRes
                 ]);
+                $pdf->setPaper('a4', 'landscape');
 
                 $path = public_path('pdf');
                 $fileName = 'Borrow_log_'.$month.'_'.$year.'.pdf';

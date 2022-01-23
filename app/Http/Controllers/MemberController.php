@@ -54,17 +54,21 @@ class MemberController extends Controller
             'photo' => '',
         ]);
         $photo = $request->photo;
-        $user = User::create([
+        $code = Member::generateCodeMember();
+
+        $user = [
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role_id' => 1,
             'avatar' => $photo,
-        ]);
+        ];
+        if(!$photo) unset($user['avatar']);
+        $user = User::create($user);
         $user_id = $user->id;
-        $code = Member::generateCodeMember();
-        $trx = Member::create([
+
+        $member = [
             'code' => $code,
             'full_name' => $request->name,
             'address' => $request->address,
@@ -72,7 +76,9 @@ class MemberController extends Controller
             'user_id'=>$user_id,
             'profession' => $request->profession,
             'photo' => $photo,
-        ]);        
+        ];
+        if(!$photo) unset($member['photo']);
+        $trx = Member::create($member);        
 
         if($trx){
             return redirect()->route('member.index')->with(['success' => 'Data Saved Successfully!']);
@@ -104,7 +110,7 @@ class MemberController extends Controller
     public function edit(Member $member)
     {
         //
-        $data = $member;
+        $data = Member::with(['user'])->find($member->id);
         $id = $data->id;
         return view('pages.member.edit', compact('data', 'id'));
     }
@@ -119,35 +125,42 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         //
-         $rules = [
-            
+        $rules = [  
             'name' => 'required|max:255',
             'gender' => 'required',
             'profession' => 'required',
             'address' => 'required',
             'username' => 'required|alpha_dash|unique:users,username,'.$member->user_id.'|max:100',
             'email' => 'required|email|unique:users,email,'.$member->user_id,
-            'password' => 'required|alpha_dash',
+            'password' => 'alpha_dash',
             'photo' => '',
         ];
-
+        if(!$request->password) unset($rules['password']);
         
-         $request->validate($rules);
-         $photo = $request->photo;
-         $user = User::where('id', $member->user_id)->Update([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'avatar' => $photo,
-        ]);
-      
-        $trx =  $member->update([
+        $request->validate($rules);
+        $photo = $request->photo;
+        $update = [];
+        if(!$request->password) {
+            $update = $request->except(['_token', '_method', 'password', 'gender', 'address', 'profession', 'photo']);
+            if($photo) $update['avatar'] = $photo;
+        }else{
+            $update = $request->except(['_token', '_method', 'gender', 'address', 'profession', 'photo']);
+            $update['password'] = bcrypt($request['password']);
+            if($photo) $update['avatar'] = $photo;
+        }
+        User::where('id', $member->user_id)->update($update);
+        
+        $update = [
             'full_name' => $request->name,
             'address' => $request->address,
             'gender' => $request->gender,
             'profession' => $request->profession,
             'photo' => $photo,
-        ]);        
+        ];
+
+        if(!$update['photo']) unset($update['photo']);
+        // dd($update);
+        $trx = $member->update($update); 
 
         if($trx){
             return redirect()->route('member.index')->with(['success' => 'Data Saved Successfully!']);
@@ -165,8 +178,9 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         //
-         $delete = $member->delete();
+        $delete = $member->delete();
         if($delete){
+            User::find($member->user_id)->delete();
             return response()->json([
                 'message' => 'Data Deleted Successfully!'
             ]);

@@ -8,7 +8,7 @@
 </div>
 <div class="form-group">
   <label>Summary</label>
-  <input type="text" name="summary" class="form-control" placeholder="Summary" value="{{ old('summary', @$data->summary) }}">
+  <textarea name="summary" class="form-control" placeholder="Summary">{{ old('summary', @$data->summary) }}</textarea>
   @if($errors->has('summary'))
     <span class="text-danger text-sm">{{ $errors->first('summary') }}</span>
   @endif
@@ -49,7 +49,7 @@
     @if (count($categories) > 0)
       @foreach ($categories as $category)
       
-        @if(in_array($category->id, $catAll))
+        @if(isset($catAll) && in_array($category->id, $catAll))
           <option value="{{ $category->id }}" selected>{{ $category->category }}</option>
         @else
           <option value="{{ $category->id }}">{{ $category->category }}</option>
@@ -63,7 +63,7 @@
   @endif
 </div>
 <div class="form-group">
-  <label>cover</label>
+  <label>Cover</label>
   <div class="input-group" id="group_pp">
     <input id="thumbnail" class="form-control" type="text" name="cover" value="{{ old('cover', @$data->cover) }}" readonly>
     <span class="input-group-append">
@@ -74,7 +74,7 @@
   </div>
   <div id="holder" style="margin-top:15px;max-height:100px;">
     @if(@$data->cover)
-      <img src="{{$data->cover}}" style="height:100px;">
+      <img src="{{$data->cover}}" class="prev-image">
     @endif
   </div>
   @if($errors->has('cover'))
@@ -83,6 +83,6 @@
 </div>
 <div class="form-group">
   <button id="btn-save" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
-  <button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>
+  {{--<button id="btn-reset" type="reset" class="btn btn-default"><i class="fas fa-redo"></i> Reset</button>--}}
   <a href="{{ route('book.index') }}" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back</a>
 </div>  

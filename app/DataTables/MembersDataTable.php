@@ -22,7 +22,7 @@ class MembersDataTable extends DataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('image', function ($data) {
-                $image = $data->avatar == '' ? asset('assets/img/theme/team-3.jpg') : $data->avatar;
+                $image = $data->photo == '' ? asset('assets/img/theme/team-3.jpg') : $data->photo;
                 return '<img class="avatar rounded-circle" src="'.$image.'">';
             })
             ->addColumn('action', function ($data) {

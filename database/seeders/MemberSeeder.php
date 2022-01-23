@@ -26,10 +26,10 @@ class MemberSeeder extends Seeder
                 'avatar' => url('storage/images/1/profile2.jpeg'),
                 'member' => [
                     'id' => 1,
-                    'code' => 'MB-001',
+                    'code' => 'MBR-0001',
                     'full_name' => 'Neni',
                     'address' => 'Bojong Kukun',
-                    'gender' => 'female',
+                    'gender' => 'Female',
                     'photo' => url('storage/images/1/profile2.jpeg'),
                     'profession' => 'student',
                     'user_id' => ''
@@ -44,10 +44,10 @@ class MemberSeeder extends Seeder
                 'avatar' => url('storage/images/1/profile6.jpg'),
                 'member' => [
                     'id' => 2,
-                    'code' => 'MB-002',
+                    'code' => 'MBR-0002',
                     'full_name' => 'Euis',
                     'address' => 'Antapani',
-                    'gender' => 'female',
+                    'gender' => 'Female',
                     'photo' => url('storage/images/1/profile6.jpg'),
                     'profession' => 'student',
                     'user_id' => ''

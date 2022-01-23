@@ -118,7 +118,7 @@
               <h3 class="mb-0">Borrowing history</h3>
             </div>
             <div class="col text-right">
-              <a href="" class="btn btn-sm btn-primary">See all</a>
+              <a href="{{ route('borrow_log.index') }}" class="btn btn-sm btn-primary">See all</a>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@
                 <tr>
                   <th scope="row">{{ $item->member->full_name }}</th>
                   <td><span class="badge badge-info">{{ $item->book->book }}</span></td>
-                  <td>{{ date('d/m/Y', strtotime($item->created_at)) }}</td>
+                  <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }}</td>
                   <td>
                     <span class='badge badge-{{ $item->is_returned == 1 ? 'success': 'danger' }}'>{{ $item->is_returned == 1 ? 'YES': 'NO' }}</span>
                   </td>
@@ -157,7 +157,7 @@
               <h3 class="mb-0">Popular Books</h3>
             </div>
             <div class="col text-right">
-              <a href="" class="btn btn-sm btn-primary">See all</a>
+              <a href="{{ route('borrow_log.index') }}" class="btn btn-sm btn-primary">See all</a>
             </div>
           </div>
         </div>

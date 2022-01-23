@@ -17,7 +17,7 @@
     <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
       <li class="breadcrumb-item"><a href="#"><i class="ni ni-settings"></i></a></li>
       <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Member</a></li>
-      <li class="breadcrumb-item activer" aria-current="page">Detail</li>
+      <li class="breadcrumb-item active" aria-current="page">Detail</li>
     </ol>
   </nav>
 </div>

@@ -21,10 +21,10 @@
       @php
         use App\Helpers\Menu;
         
-        $prefix = Request::segment(1);
+        $role_id = Auth::user()->role_id;
         $menu = '';
 
-        if($prefix == 'admin'){
+        if($role_id == 3 || $role_id == 2){
           $obj_menu = new Menu();
           $obj_menu->init()
             ->start_group()
@@ -41,15 +41,16 @@
             ->divinder('Report')
             ->start_group()
             ->item('Borrow Log', 'fas fa-history', 'admin/borrow_log/report', Request::is('admin/borrow_log/report'))
-            ->end_group()
-            ->divinder('User Management')
-            ->start_group()
-            // ->item('Role', 'ni ni-settings-gear-65', 'admin/role', Request::is('admin/role'))
-            ->item('User', 'ni ni-settings', 'admin/user', Request::is('admin/user'))
             ->end_group();
+          if($role_id == 3){
+            $obj_menu->divinder('User Management')
+              ->start_group()
+              ->item('User', 'ni ni-settings', 'admin/user', Request::is('admin/user'))
+              ->end_group();
+          }
             
             $menu = $obj_menu->to_html();
-          }else if($prefix == 'member'){
+          }else if($role_id == 1){
             $obj_menu = new Menu();
             $obj_menu->init()
               ->start_group()

@@ -26,6 +26,9 @@ Route::get('/', function () {
 });
 
 Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
+Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+Route::put('/update_profile/{id}', [UserController::class, 'update_profile'])->name('user.update_profile');
+Route::put('/update_member_profile/{id}', [UserController::class, 'update_member_profile'])->name('user.update_member_profile');
 
 Route::prefix('member')->group(function () {
     Route::get('/login', [MemberController::class, 'login'])->name('member.login');
@@ -54,7 +57,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/borrow_log/on_extend/{member_id}/{book_id}/{borrow_id}', [BorrowLogController::class, 'on_extend'])->name('borrow_log.on_extend');
         Route::post('/borrow_log/on_preview_report', [BorrowLogController::class, 'on_preview_report'])->name('borrow_log.on_preview_report');
         Route::post('/borrow_log/on_export_report/{type}', [BorrowLogController::class, 'on_export_report'])->name('borrow_log.on_export_report');
-        Route::get('/borrow_log/test', [BorrowLogController::class, 'test'])->name('borrow_log.test');
         Route::resources([
             'member' => MemberController::class,
             'author' => AuthorController::class,

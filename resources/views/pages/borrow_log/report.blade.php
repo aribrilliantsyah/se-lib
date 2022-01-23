@@ -64,7 +64,7 @@
               </select>
             </div>
             <div class="form-group col-md-12">
-              <button onclick="on_preview()" class="btn btn-sm btn-primary"><i class="fa fa-filter"></i> FILTER</button>
+              <button onclick="on_preview()" class="btn btn-sm btn-primary"><i class="fa fa-filter"></i> PREVIEW</button>
               <button onclick="on_export('pdf')" class="btn btn-sm btn-danger"><i class="fa fa-file-pdf"></i> PDF</button>
               <button onclick="" class="btn btn-sm btn-success"><i class="fa fa-file-excel"></i> EXCEL</button>
             </div>
@@ -158,7 +158,7 @@
               html += '</tr>'
             }
           }else{
-            html = '<tr><td coslpan="9" style="text-align: center;"> No data to display</td></tr>'
+            html = '<tr><td colspan="9" style="text-align: center;"> No data to display</td></tr>'
           }
 
           $('#table-box').html(html)

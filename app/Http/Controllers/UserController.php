@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\DataTables\UsersDataTable;
+use App\Models\Member;
 use App\Models\Role;
 
 class UserController extends Controller
@@ -121,7 +122,13 @@ class UserController extends Controller
         
         $request->validate($rules);
 
-        if(!$request->password) $request = $request->except(['password']);
+        if(!$request->password) {
+            $request = $request->except(['password']);
+        }else{
+            $request = $request->all();
+            $request['password'] = bcrypt($request['password']);
+        }
+        
         $trx = $user->update($request);
 
         if($trx){
@@ -208,5 +215,100 @@ class UserController extends Controller
             return redirect('admin/login');
         }
 
+    }
+    
+    public function profile()
+    {
+        //
+        if(Auth::user()->role_id == 1){
+            $data = AuthCommon::user();
+            // dd($data);
+            return view('pages.user.profile_member', [
+                'data' => $data,
+                'id' => $data->member->id
+            ]);
+        }else{
+            $data = AuthCommon::user();
+            return view('pages.user.profile', [
+                'id' => $data->id,
+                'data' => $data,
+            ]);
+        }
+    }
+
+    public function update_profile(Request $request, $id){
+        $rules = [
+            'name' => 'required|max:255',
+            'username' => 'required|alpha_dash|unique:users,username,'.$id.'|max:100',
+            'email' => 'required|email|unique:users,email,'.$id,
+            'password' => 'alpha_dash',
+            'avatar' => '',
+        ];
+
+        if(!$request->password) unset($rules['password']);
+        
+        $request->validate($rules);
+
+        if(!$request->password) {
+            $request = $request->except(['password']);
+        }else{
+            $request = $request->all();
+            $request['password'] = bcrypt($request['password']);
+        }
+        
+        $user = User::find($id);
+        $trx = $user->update($request);
+
+        if($trx){
+            return redirect()->route('user.profile')->with(['success' => 'Data Saved Successfully!']);
+        }else{
+            return redirect()->route('user.profile')->with(['error' => 'Data Failed to Save!']);
+        }
+    }
+    
+    public function update_member_profile(Request $request, $id){
+        $member = Member::find($id);
+        $rules = [  
+            'name' => 'required|max:255',
+            'gender' => 'required',
+            'profession' => 'required',
+            'address' => 'required',
+            'username' => 'required|alpha_dash|unique:users,username,'.$member->user_id.'|max:100',
+            'email' => 'required|email|unique:users,email,'.$member->user_id,
+            'password' => 'alpha_dash',
+            'photo' => '',
+        ];
+        if(!$request->password) unset($rules['password']);
+        
+        $request->validate($rules);
+        $photo = $request->photo;
+        $update = [];
+        if(!$request->password) {
+            $update = $request->except(['_token', '_method', 'password', 'gender', 'address', 'profession', 'photo']);
+            if($photo) $update['avatar'] = $photo;
+        }else{
+            $update = $request->except(['_token', '_method', 'gender', 'address', 'profession', 'photo']);
+            $update['password'] = bcrypt($request['password']);
+            if($photo) $update['avatar'] = $photo;
+        }
+        User::where('id', $member->user_id)->update($update);
+        
+        $update = [
+            'full_name' => $request->name,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'profession' => $request->profession,
+            'photo' => $photo,
+        ];
+
+        if(!$update['photo']) unset($update['photo']);
+        // dd($update);
+        $trx = $member->update($update); 
+        
+        if($trx){
+            return redirect()->route('user.profile')->with(['success' => 'Data Saved Successfully!']);
+        }else{ 
+            return redirect()->route('user.profile')->with(['error' => 'Data Failed to Save!']);
+        }
     }
 }

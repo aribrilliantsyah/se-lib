@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Book;
 use App\Models\BorrowLog;
@@ -38,6 +39,21 @@ class DashboardController extends Controller
     }
 
     public function member() {
-        return view('pages.dashboard.member');
+        $member_id = AuthCommon::user()->member->id;
+
+        $data = [
+            'total_borrowed' => BorrowLog::where('member_id', '=', $member_id)->get()->count(),
+            'total_returned' => BorrowLog::where('member_id', '=', $member_id)->where('is_returned', '=', 1)->get()->count(),
+            'late_return' => BorrowLog::where('member_id', '=', $member_id)
+                                    ->where('is_returned', '=', 1)
+                                    ->where('updated_at', '>', 'return_estimate')
+                                    ->get()->count(),
+            'timely_return' => BorrowLog::where('member_id', '=', $member_id)
+                                    ->where('is_returned', '=', 1)
+                                    ->where('updated_at', '<=', 'return_estimate')
+                                    ->get()->count(),
+        ];
+
+        return view('pages.dashboard.member', $data);
     }
 }
