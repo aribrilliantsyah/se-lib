@@ -225,4 +225,38 @@ class MemberController extends Controller
         //
         return view('auth.member.register');
     }
+
+    /**
+     * Register process for member.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register_process(Request $request)
+    {
+        //
+       // dd($request->all());
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|alpha_dash|confirmed',
+            'password_confirmation' => 'required',
+        ]);
+        $trx = User::create([
+            'name' => $request->name,
+            'username' => $request->email,
+            'email' => $request->email,
+            'password' =>  bcrypt($request->password),
+            'role_id' => 1,
+        ]);
+        if($trx){
+            $credential = $request->only('email','password');
+        
+            if(AuthCommon::check_credential($credential)){
+                $user = AuthCommon::user();
+                if($user->role_id == '1') return redirect('/member/dashboard');
+
+                AuthCommon::logout();
+            }
+        }
+    }
 }

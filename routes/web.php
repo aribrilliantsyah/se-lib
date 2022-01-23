@@ -31,6 +31,7 @@ Route::prefix('member')->group(function () {
     Route::get('/login', [MemberController::class, 'login'])->name('member.login');
     Route::post('/login_process', [MemberController::class, 'login_process'])->name('member.login_process');
     Route::get('/register', [MemberController::class, 'register'])->name('member.register');
+    Route::post('/register_process', [MemberController::class, 'register_process'])->name('member.register_process');
     
     Route::middleware(['ryuna_role:member'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard.member');
