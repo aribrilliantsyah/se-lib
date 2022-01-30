@@ -66,7 +66,7 @@
             <div class="form-group col-md-12">
               <button onclick="on_preview()" class="btn btn-sm btn-primary"><i class="fa fa-filter"></i> PREVIEW</button>
               <button onclick="on_export('pdf')" class="btn btn-sm btn-danger"><i class="fa fa-file-pdf"></i> PDF</button>
-              <button onclick="" class="btn btn-sm btn-success"><i class="fa fa-file-excel"></i> EXCEL</button>
+              <button onclick="on_export('xlsx')" class="btn btn-sm btn-success"><i class="fa fa-file-excel"></i> EXCEL</button>
             </div>
           </div>
           <div class="table-responsive py-4">
@@ -189,10 +189,11 @@
         responseType: 'blob'
       },
     }).done((response) => {
+      console.log(response)
       var blob = new Blob([response]);
       var link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = `Borrow_log_${year}_${month}.pdf`;
+      link.download = `Borrow_log_${year}_${month}.${type}`;
       link.click();
     });
   }

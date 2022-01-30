@@ -12,6 +12,7 @@
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "maatwebsite/excel": "^3.1",
         "unisharp/laravel-filemanager": "^2.3",
         "yajra/laravel-datatables": "^1.5",
         "yajra/laravel-datatables-oracle": "~9.0"

@@ -255,6 +255,7 @@ class MemberController extends Controller
             'password' => 'required|alpha_dash|confirmed',
             'password_confirmation' => 'required',
         ]);
+
         $trx = User::create([
             'name' => $request->name,
             'username' => $request->email,
@@ -262,6 +263,20 @@ class MemberController extends Controller
             'password' =>  bcrypt($request->password),
             'role_id' => 1,
         ]);
+
+        $code = Member::generateCodeMember();
+
+        $member = [
+            'code' => $code,
+            'full_name' => $request->name,
+            'address' => '-',
+            'gender' => 'Male',
+            'user_id'=> $trx->id,
+            'profession' => '-'
+        ];
+
+        Member::create($member);
+
         if($trx){
             $credential = $request->only('email','password');
         

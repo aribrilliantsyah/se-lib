@@ -30,7 +30,7 @@ class DashboardController extends Controller
             'popular_books' => $popular_book,
             'total_borrowed' =>BorrowLog::all()->count(),
             'total_member' => Member::all()->count(),
-            'total_admin' => User::all()->count(),
+            'total_admin' => User::whereIn('role_id', [2,3])->count(),
             'total_returned' => BorrowLog::where('is_returned', 1)->get()->count(),
         ];
 

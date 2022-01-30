@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\BorrowBooksDataTable;
+use App\Exports\BorrowLogExport;
 use App\Helpers\AuthCommon;
 use App\Helpers\Dummy;
 use App\Models\Book;
@@ -11,6 +12,7 @@ use App\Models\Member;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PDF;
+use Excel;
 
 class BorrowLogController extends Controller
 {
@@ -333,9 +335,26 @@ class BorrowLogController extends Controller
             }
             $qRes = $query->get();
 
+            $months = [
+                1 => 'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July ',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+            ];
+
             if($type == 'pdf'){
                 $pdf = PDF::loadView('pdf.borrow_log', [
-                    'borrow_log' => $qRes
+                    'borrow_log' => $qRes,
+                    'month' => strtoupper($months[$month]),
+                    'year' => $year
                 ]);
                 $pdf->setPaper('a4', 'landscape');
 
@@ -345,6 +364,9 @@ class BorrowLogController extends Controller
         
                 $pdf = public_path('pdf/'.$fileName);
                 return response()->download($pdf);
+            }else if($type == 'xlsx'){
+                $fileName = 'Borrow_log_'.$month.'_'.$year.'.xlsx';
+                return Excel::download(new BorrowLogExport(strtoupper($months[$month]), $year, $qRes), $fileName);
             }
         }
 

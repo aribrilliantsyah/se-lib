@@ -22,7 +22,7 @@
       </td>
       <td style="padding-left: 10px;">
         <h1>REPORT SE-LIB</h1>
-        <h3>JUNE 2022</h3>
+        <h3>{{ $month }} {{ $year }}</h3>
       </td>
     </tr>
   </table>
@@ -59,7 +59,7 @@
         @endforeach
         @else
             <tr>
-                <td colspan="8" style="text-align: center;">No data to display</td>
+                <td colspan="9" style="text-align: center;">No data to display</td>
             </tr>
         @endif
     </tbody>
